@@ -1,8 +1,11 @@
+UNAME := $(shell uname)
 W        = -Wall
 OPT      = -O2
 STD      = -std=c++17
 INCS     = -Isrc/
-LDFLAGS  = -luv -lssl -lz -lcrypto
+ifeq ($(UNAME), Darwin)
+	LDFLAGS  = -luv -lssl -lz -lcrypto
+endif
 CXXFLAGS = $(STD) $(OPTS) $(W) -fPIC $(XCXXFLAGS) $(INCS)
 INCS     = -Isrc/
 
