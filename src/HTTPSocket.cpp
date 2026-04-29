@@ -22,7 +22,7 @@ char *getHeaders(char *buffer, char *end, Header *headers, size_t maxHeaders) {
             }
         } else {
             headers->keyLength = (unsigned int) (buffer - headers->key);
-            for (buffer++; (*buffer == ':' || *buffer < 33) && *buffer != '\r'; buffer++);
+            for (buffer++; *buffer < 33 && *buffer != '\r'; buffer++);
             headers->value = buffer;
             buffer = (char *) memchr(buffer, '\r', end - buffer); //for (; *buffer != '\r'; buffer++);
             if (buffer /*!= end*/ && buffer[1] == '\n') {
