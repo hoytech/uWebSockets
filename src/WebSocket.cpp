@@ -388,6 +388,11 @@ bool WebSocket<isServer>::handleFragment(char *data, size_t length, unsigned int
                 }
                 webSocket->fragmentBuffer.clear();
             }
+
+            if (webSocket->fragmentBuffer.length() > group->maxPayload) {
+                forceClose(webSocketState, (char*)"payload size exceeded", 21);
+                return true;
+            }
         }
     } else {
         if (!remainingBytes && fin && !webSocket->controlTipLength) {
