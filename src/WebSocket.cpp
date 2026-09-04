@@ -292,19 +292,6 @@ template <bool isServer>
 void WebSocket<isServer>::onEnd(uS::Socket *s, char *message, size_t messageLength) {
     WebSocket<isServer> *webSocket = static_cast<WebSocket<isServer> *>(s);
 
-    // Idempotency guard: onEnd can be re-entered for a socket that was already
-    // closed earlier in the same event-loop iteration. This happens when
-    // terminate() is called from a *different* poll's callback (the slow-client
-    // back-pressure cap does exactly this) while this socket still has a pending
-    // event sitting in the same epoll batch. closeSocket() sets the fd to -1
-    // (isClosed()) but defers the object delete, so the stale event re-enters
-    // here. Bail out to avoid firing disconnectionHandler twice and
-    // double-closing the socket (which double-frees both the user data and the
-    // WebSocket itself).
-    if (webSocket->isClosed()) {
-        return;
-    }
-
     if (!webSocket->isShuttingDown()) {
         Group<isServer>::from(webSocket)->removeWebSocket(webSocket);
         Group<isServer>::from(webSocket)->disconnectionHandler(webSocket, 1006, message, messageLength);

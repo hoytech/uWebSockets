@@ -31,13 +31,6 @@ void Loop::doEpoll(int epollTimeout) {
 
     for (int i = 0; i < numFdReady; i++) {
         Poll *poll = (Poll *) readyEvents[i].data.ptr;
-        // A poll closed by an earlier callback in this same batch is still
-        // present in readyEvents (its deletion is deferred to loop->closing).
-        // Dispatching to it would operate on a closed fd (-1) and re-run the
-        // teardown path. Skip it.
-        if (poll->isClosed()) {
-            continue;
-        }
         int status = -bool(readyEvents[i].events & EPOLLERR);
         callbacks[poll->state.cbIndex](poll, status, readyEvents[i].events);
     }
